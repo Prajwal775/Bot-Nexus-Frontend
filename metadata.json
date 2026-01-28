@@ -1,0 +1,9 @@
+
+{
+  "name": "BotNexus AI Platform",
+  "description": "A comprehensive enterprise AI chatbot management platform featuring dashboard analytics, knowledge base management, real-time chat logs, and advanced AI configuration settings.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
