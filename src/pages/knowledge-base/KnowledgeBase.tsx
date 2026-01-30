@@ -12,7 +12,8 @@ const KnowledgeBase: React.FC = () => {
   >('documents');
 
   return (
-    <div className='flex-1 flex flex-col h-full overflow-y-auto'>
+    // <div className='flex-1 flex flex-col min-h-0 overflow-y-auto'>
+    <div className='flex flex-col'>
       <div className='max-w-6xl mx-auto w-full px-8 py-8'>
         {/* Header */}
         <header className='mb-6 flex flex-wrap justify-between items-start gap-4'>
@@ -22,10 +23,6 @@ const KnowledgeBase: React.FC = () => {
               Train your AI with custom data sources.
             </p>
           </div>
-          <button className='flex items-center gap-2 px-3 py-1.5 border border-border-dark rounded-lg text-xs font-medium hover:bg-card-dark'>
-            <span className='material-symbols-outlined text-xs'>refresh</span>
-            Sync All
-          </button>
         </header>
 
         {/* Quick Actions */}

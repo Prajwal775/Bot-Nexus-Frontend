@@ -7,23 +7,18 @@ const CrawlSource: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const handleCrawl = async () => {
-    if (!url.trim()) {
+    const trimmedUrl = url.trim();
+
+    if (!trimmedUrl) {
       showGlobalToast('Please enter a valid URL', 'warning');
       return;
     }
-
     try {
       setLoading(true);
 
-      await api.post(
-        '/api/v1/knowledge-base/url',
-        { url },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      await api.post('/api/v1/knowledge-base/url', {
+        url: trimmedUrl,
+      });
 
       showGlobalToast('Website crawl started successfully', 'success');
       setUrl(''); // optional: clear input after success

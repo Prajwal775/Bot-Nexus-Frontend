@@ -1,13 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BotNexus AI Platform</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -29,6 +31,9 @@
         }
     </script>
     <style type="text/tailwindcss">
+        html, body, #root {
+  height: 100%;
+}
         @layer base {
             .material-symbols-outlined {
                 font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -40,6 +45,7 @@
         body {
             @apply bg-background-dark font-display text-white;
         }
+        
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -58,8 +64,9 @@
             box-shadow: 0 0 0 2px rgba(127, 19, 236, 0.2) !important;
             border-color: #7f13ec !important;
         }
+
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.4",
@@ -70,8 +77,10 @@
 }
 </script>
 </head>
+
 <body>
     <div id="root"></div>
-<script type="module" src="/src/index.tsx"></script>
+    <script type="module" src="/src/index.tsx"></script>
 </body>
+
 </html>

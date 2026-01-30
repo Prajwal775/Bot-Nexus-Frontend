@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Session } from '../types';
-
+import { Session } from 'types';
 interface ChatLogsProps {
   onSelectSession: (id: string) => void;
 }

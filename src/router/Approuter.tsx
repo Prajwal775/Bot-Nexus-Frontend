@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import KnowledgeBase from '@/pages/knowledge-base/KnowledgeBase';
 import AddManualQA from '@/pages/knowledge-base/manual/manualqa';
 import Signup from '@/pages/Signup';
+import ChatLogs from '@/pages/ChatLogs';
+import Settings from '@/pages/Settings';
 
 /**
  * ProtectedRoute checks localStorage for authToken and
@@ -31,7 +33,7 @@ const AppRoutes: React.FC = () => {
     <Routes>
       {/* Public */}
       <Route path='/login' element={<Login />} />
-      <Route path='/signup' element={<Signup />}/>
+      <Route path='/signup' element={<Signup />} />
 
       {/* Protected layout: App is the layout that contains Sidebar/ChatWidget + <Outlet /> */}
       <Route
@@ -45,8 +47,20 @@ const AppRoutes: React.FC = () => {
         <Route path='/knowledge-base' element={<KnowledgeBase />} />
 
         <Route path='/knowledge-base/manual' element={<AddManualQA />} />
+        <Route
+          path='/chat-logs'
+          element={
+            <ChatLogs
+              onSelectSession={(sessionId) => {
+                console.log('Selected session:', sessionId);
+                // later: navigate(`/chat-logs/${sessionId}`)
+              }}
+            />
+          }
+        />
+        <Route path='/settings' element={<Settings />} />
 
-        {/* add more protected child routes here, e.g. /cases, /cases/:id */}
+        {/* add more protected child routes here */}
       </Route>
 
       {/* Default / fallback */}

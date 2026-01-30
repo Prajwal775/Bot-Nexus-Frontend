@@ -22,6 +22,29 @@ const UploadSource: React.FC = () => {
     }
   };
 
+  //   const handleUpload = async () => {
+  //     if (!selectedFile) return;
+
+  //     try {
+  //       setLoading(true);
+
+  //       const formData = new FormData();
+  //       formData.append('file', selectedFile);
+
+  //       await api.post('/api/v1/upload/upload-file', formData, {
+
+  //       });
+
+  //       showGlobalToast('File uploaded successfully', 'success');
+  //       clearFile();
+  //       setOpen(false);
+  //     } catch (err) {
+  //       console.error(err);
+  //       showGlobalToast('File upload failed', 'error');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
   const handleUpload = async () => {
     if (!selectedFile) return;
 
@@ -31,11 +54,8 @@ const UploadSource: React.FC = () => {
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      await api.post('/api/v1/upload/upload-file', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      await api.post('/api/v1/upload/upload-file', formData);
+      // 👆 NO headers here
 
       showGlobalToast('File uploaded successfully', 'success');
       clearFile();

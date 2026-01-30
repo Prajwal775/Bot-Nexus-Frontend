@@ -8,32 +8,38 @@ const AddManualQA: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
+const normalizeText = (text: string) =>
+  text.replace(/\s*\n\s*/g, ' ').trim();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!question.trim() || !answer.trim()) {
-      showGlobalToast('Question and Answer are required', 'warning');
-      return;
-    }
+  const cleanQuestion = normalizeText(question);
+  const cleanAnswer = normalizeText(answer);
 
-    try {
-      setLoading(true);
+  if (!cleanQuestion || !cleanAnswer) {
+    showGlobalToast('Question and Answer are required', 'warning');
+    return;
+  }
 
-      await api.post('/api/v1/knowledge-base/qa', {
-        question,
-        answer,
-      });
+  try {
+    setLoading(true);
 
-      showGlobalToast('Manual Q&A saved successfully', 'success');
-      navigate('/knowledge-base');
-    } catch (err) {
-      console.error(err);
-      showGlobalToast('Failed to save Manual Q&A', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+    await api.post('/api/v1/knowledge-base/qa', {
+      question: cleanQuestion,
+      answer: cleanAnswer,
+    });
+
+    showGlobalToast('Manual Q&A saved successfully', 'success');
+    navigate('/knowledge-base');
+  } catch (err) {
+    console.error(err);
+    showGlobalToast('Failed to save Manual Q&A', 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="max-w-4xl mx-auto w-full px-8 py-8">
