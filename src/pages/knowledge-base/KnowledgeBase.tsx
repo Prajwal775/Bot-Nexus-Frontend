@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UploadSource from './components/UploadSource';
 import CrawlSource from './components/CrawlSource';
 import ManualSource from './components/ManualSource';
 import SourceTabs from './components/SourceTabs';
 import SourcesTable from './components/SourcesTable';
 import KnowledgeFooter from './components/knowledgeFooter';
+import { fetchKnowledgeBase, KnowledgeItem } from '@/api/knowledgeBase.api';
 
 const KnowledgeBase: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     'documents' | 'crawler' | 'manual'
   >('documents');
+  const [items, setItems] = useState<KnowledgeItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
+
+   useEffect(() => {
+    setLoading(true);
+    fetchKnowledgeBase()
+      .then(res => setItems(res.items))
+      .finally(() => setLoading(false));
+  }, []);
+  
   return (
     // <div className='flex-1 flex flex-col min-h-0 overflow-y-auto'>
     <div className='flex flex-col'>
@@ -33,9 +44,13 @@ const KnowledgeBase: React.FC = () => {
         </section>
 
         {/* Tabs + Table */}
-        <section>
+         <section>
           <SourceTabs activeTab={activeTab} onChange={setActiveTab} />
-          <SourcesTable />
+          <SourcesTable
+            activeTab={activeTab}
+            items={items}
+            loading={loading}
+          />
         </section>
 
         <KnowledgeFooter />

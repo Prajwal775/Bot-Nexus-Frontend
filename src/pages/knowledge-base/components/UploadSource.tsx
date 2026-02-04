@@ -22,29 +22,6 @@ const UploadSource: React.FC = () => {
     }
   };
 
-  //   const handleUpload = async () => {
-  //     if (!selectedFile) return;
-
-  //     try {
-  //       setLoading(true);
-
-  //       const formData = new FormData();
-  //       formData.append('file', selectedFile);
-
-  //       await api.post('/api/v1/upload/upload-file', formData, {
-
-  //       });
-
-  //       showGlobalToast('File uploaded successfully', 'success');
-  //       clearFile();
-  //       setOpen(false);
-  //     } catch (err) {
-  //       console.error(err);
-  //       showGlobalToast('File upload failed', 'error');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
   const handleUpload = async () => {
     if (!selectedFile) return;
 
@@ -57,11 +34,23 @@ const UploadSource: React.FC = () => {
       await api.post('/api/v1/upload/upload-file', formData);
       // 👆 NO headers here
 
-      showGlobalToast('File uploaded successfully', 'success');
+      showGlobalToast('File uploaded. Indexing in background.', 'success');
       clearFile();
       setOpen(false);
     } catch (err) {
-      console.error(err);
+      // ⏱️ Axios timeout / aborted
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        showGlobalToast(
+          'Upload successful. Processing continues in background.',
+          'info'
+        );
+
+        clearFile();
+        setOpen(false);
+        return;
+      }
+
+      // Real error
       showGlobalToast('File upload failed', 'error');
     } finally {
       setLoading(false);

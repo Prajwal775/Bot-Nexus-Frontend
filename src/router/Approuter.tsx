@@ -10,6 +10,8 @@ import AddManualQA from '@/pages/knowledge-base/manual/manualqa';
 import Signup from '@/pages/Signup';
 import ChatLogs from '@/pages/ChatLogs';
 import Settings from '@/pages/Settings';
+import Home from '@/pages/Home';
+import ChatDetails from '@/pages/ChatDetails';
 
 /**
  * ProtectedRoute checks localStorage for authToken and
@@ -32,6 +34,7 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* Public */}
+      <Route path='/' element={<Home />} />
       <Route path='/login' element={<Login />} />
       <Route path='/signup' element={<Signup />} />
 
@@ -47,24 +50,21 @@ const AppRoutes: React.FC = () => {
         <Route path='/knowledge-base' element={<KnowledgeBase />} />
 
         <Route path='/knowledge-base/manual' element={<AddManualQA />} />
+        <Route path='/chat-logs' element={<ChatLogs />} />
         <Route
-          path='/chat-logs'
-          element={
-            <ChatLogs
-              onSelectSession={(sessionId) => {
-                console.log('Selected session:', sessionId);
-                // later: navigate(`/chat-logs/${sessionId}`)
-              }}
-            />
-          }
+          path='/chat-logs/:sessionId'
+          element={<ChatDetails readOnly />}
         />
+
+        <Route path='/chats' element={<ChatDetails />} />
+
+
         <Route path='/settings' element={<Settings />} />
 
         {/* add more protected child routes here */}
       </Route>
 
       {/* Default / fallback */}
-      <Route path='/' element={<Navigate to='/login' replace />} />
       <Route path='*' element={<Navigate to='/login' replace />} />
     </Routes>
   );

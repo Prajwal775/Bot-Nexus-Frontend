@@ -16,7 +16,8 @@ export interface NavItem {
 }
 
 export interface Session {
-  id: string;
+  id: string;          // ✅ backend session_id
+  displayId: string;   // ✅ UI-only (#123)
   startTime: string;
   duration: string;
   type: 'AI Only' | 'Human Only' | 'AI + Human';

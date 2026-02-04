@@ -11,6 +11,8 @@ const Sidebar: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
     { path: '/knowledge-base', label: 'Knowledge Base', icon: 'database' },
     { path: '/chat-logs', label: 'Chat Logs', icon: 'forum' },
+    { path: '/chats', label: 'Chats', icon: 'chat' },
+
     { path: '/settings', label: 'Settings', icon: 'settings' },
   ];
 

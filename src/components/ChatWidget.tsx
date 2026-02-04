@@ -2,102 +2,77 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useChat } from '@/context/ChatContext';
 import { askQuestionApi } from '@/api/chatApi';
 
-type Message = {
-  role: 'assistant' | 'user';
-  content: string;
-};
-
-const WELCOME_MESSAGE =
-  "Hi there! I'm your Nexus assistant. How can I help you build your identity today?";
-
 const normalizeText = (text: string) => text.replace(/\s*\n\s*/g, ' ').trim();
 
 const ChatWidget: React.FC = () => {
-  const { chatState, openChat, closeChat, resetSession } = useChat();
-  const { isOpen, sessionId } = chatState;
+  const {
+    chatState,
+    openChat,
+    closeChat,
+    resetSession,
+    sendMessage, // user message handler (context)
+    addBotMessage, // bot message handler (context)
+  } = useChat();
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { isOpen, sessionId, messages, mode } = chatState;
+
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-
-  const abortRef = useRef<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  /* ================= INIT WELCOME ================= */
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([{ role: 'assistant', content: WELCOME_MESSAGE }]);
-    }
-  }, [messages.length]);
+  const [botThinking, setBotThinking] = useState(false);
 
   /* ================= AUTOSCROLL ================= */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages, mode]);
 
   /* ================= SEND MESSAGE ================= */
-  const sendMessage = async () => {
-    if (!input.trim() || !sessionId || isTyping) return;
+  const handleSend = async () => {
+    if (!input.trim() || !sessionId) return;
 
     const cleanInput = normalizeText(input);
-
-    const userMessage: Message = {
-      role: 'user',
-      content: cleanInput,
-    };
-
-    // Optimistic UI
-    setMessages((prev) => [...prev, userMessage]);
     setInput('');
-    setIsTyping(true);
 
-    // Cancel previous request if any
-    abortRef.current?.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
+    // 1️⃣ Always add user message (context decides routing)
+    sendMessage(cleanInput);
 
-    try {
-      const res = await askQuestionApi(cleanInput, sessionId, {
-        signal: controller.signal,
-        timeout: 15000, // ⏱️ HARD timeout
-      });
+    // 2️⃣ BOT MODE → API
+    if (mode === 'bot') {
+      try {
+        setBotThinking(true);
+        const res = await askQuestionApi(cleanInput, sessionId);
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: res?.answer || 'Sorry, I could not generate a response.',
-        },
-      ]);
-    } catch (err: any) {
-      if (err.name === 'CanceledError') return;
+        if (!res?.answer) return;
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content:
-            err.code === 'ECONNABORTED'
-              ? 'The request took too long. Please try again.'
-              : 'Something went wrong. Please try again.',
-        },
-      ]);
-    } finally {
-      setIsTyping(false);
+        // 🚨 If API triggers escalation → DO NOT show API text
+        const isEscalation =
+          res.answer.includes('notified a human') ||
+          res.answer.includes('not sure');
+
+        if (!isEscalation) {
+          // ✅ Normal bot reply
+          addBotMessage(res.answer);
+        }
+      } catch {
+        addBotMessage('Something went wrong. Please try again.');
+      } finally {
+        setBotThinking(false);
+      }
     }
+
+    // 3️⃣ HUMAN MODE → socket handled inside context
   };
 
   /* ================= HARD CLOSE ================= */
   const handleHardClose = () => {
-    abortRef.current?.abort();
-    setMessages([{ role: 'assistant', content: WELCOME_MESSAGE }]);
-    resetSession(); // 👈 single source of truth
+    resetSession();
   };
 
   /* ================= MINIMIZE ================= */
   const handleMinimize = () => {
-    closeChat(); // UI only
+    closeChat();
   };
+
+  const isTyping = botThinking;
 
   return (
     <div className='fixed bottom-6 right-6 flex flex-col items-end gap-4 z-50'>
@@ -113,8 +88,43 @@ const ChatWidget: React.FC = () => {
 
           {/* CHAT BODY */}
           <div className='flex-1 overflow-y-auto p-4 space-y-6'>
-            {messages.map((msg, i) =>
-              msg.role === 'assistant' ? (
+            {messages.map((msg, i) => {
+              // USER
+              if (msg.sender === 'user') {
+                return (
+                  <div key={i} className='flex justify-end'>
+                    <div className='max-w-[280px] rounded-xl rounded-br-none px-4 py-3 bg-primary text-white text-sm'>
+                      {msg.text}
+                    </div>
+                  </div>
+                );
+              }
+
+              // SYSTEM (socket-driven notices)
+              if (msg.sender === 'system') {
+                return (
+                  <div key={i} className='text-center text-xs text-[#ab9db9]'>
+                    {msg.text}
+                  </div>
+                );
+              }
+
+              // AGENT
+              if (msg.sender === 'agent') {
+                return (
+                  <div key={i} className='flex gap-3'>
+                    <div className='w-8 h-8 rounded-full bg-green-500 shrink-0 flex items-center justify-center text-xs text-black font-bold'>
+                      A
+                    </div>
+                    <div className='max-w-[280px] rounded-xl rounded-bl-none px-4 py-3 bg-[#243b2f] text-white text-sm'>
+                      {msg.text}
+                    </div>
+                  </div>
+                );
+              }
+
+              // BOT
+              return (
                 <div key={i} className='flex gap-3'>
                   <div
                     className='w-8 h-8 rounded-full bg-cover shrink-0'
@@ -124,19 +134,13 @@ const ChatWidget: React.FC = () => {
                     }}
                   />
                   <div className='max-w-[280px] rounded-xl rounded-bl-none px-4 py-3 bg-[#302839] text-white text-sm'>
-                    {msg.content}
+                    {msg.text}
                   </div>
                 </div>
-              ) : (
-                <div key={i} className='flex justify-end'>
-                  <div className='max-w-[280px] rounded-xl rounded-br-none px-4 py-3 bg-primary text-white text-sm'>
-                    {msg.content}
-                  </div>
-                </div>
-              )
-            )}
+              );
+            })}
 
-            {/* TYPING INDICATOR */}
+
             {isTyping && (
               <div className='flex gap-3'>
                 <div
@@ -170,17 +174,17 @@ const ChatWidget: React.FC = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    sendMessage();
+                    handleSend();
                   }
                 }}
                 placeholder='Type your question...'
                 className='flex-1 bg-[#302839] text-white px-4 rounded-xl text-sm focus:outline-none'
-                disabled={isTyping}
+                disabled={false}
               />
 
               <button
-                onClick={sendMessage}
-                disabled={isTyping || !input.trim()}
+                onClick={handleSend}
+                disabled={!input.trim()}
                 className='size-12 rounded-xl bg-primary hover:bg-primary/90 text-white flex items-center justify-center disabled:opacity-50'
               >
                 <span className='material-symbols-outlined'>send</span>

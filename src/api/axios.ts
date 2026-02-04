@@ -1,8 +1,8 @@
 import axios from 'axios';
-import {showGlobalToast} from '../components/ui/ToastProvider';
+import { showGlobalToast } from '../components/ui/ToastProvider';
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,
+  timeout: 5 * 60 * 1000, // 5 minutes
   headers: {
     Accept: 'application/json',
   },

@@ -20,38 +20,51 @@ const CrawlSource: React.FC = () => {
         url: trimmedUrl,
       });
 
-      showGlobalToast('Website crawl started successfully', 'success');
+      showGlobalToast(
+        'Website crawl started. Indexing in background.',
+        'success'
+      );
       setUrl(''); // optional: clear input after success
     } catch (err) {
       console.error(err);
+      // ⏱️ Axios timeout / aborted request
+      if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        showGlobalToast(
+          'Crawl started. Processing is continuing in background.',
+          'info'
+        );
+        setUrl('');
+        return;
+      }
+
+      // Real error
       showGlobalToast('Failed to crawl website', 'error');
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <div className="bg-card-dark rounded-xl p-4 border border-border-dark hover:border-primary/50 transition-all flex flex-col gap-3">
-      <div className="flex items-center gap-2">
-        <div className="text-primary bg-primary/10 w-8 h-8 flex items-center justify-center rounded-lg">
-          <span className="material-symbols-outlined">language</span>
+    <div className='bg-card-dark rounded-xl p-4 border border-border-dark hover:border-primary/50 transition-all flex flex-col gap-3'>
+      <div className='flex items-center gap-2'>
+        <div className='text-primary bg-primary/10 w-8 h-8 flex items-center justify-center rounded-lg'>
+          <span className='material-symbols-outlined'>language</span>
         </div>
-        <h3 className="text-sm font-bold">Crawl Website</h3>
+        <h3 className='text-sm font-bold'>Crawl Website</h3>
       </div>
 
-      <div className="flex gap-2">
+      <div className='flex gap-2'>
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           disabled={loading}
-          className="flex-1 bg-background-dark border-border-dark rounded-lg text-xs px-3 py-2 text-white placeholder:text-[#ab9db9] disabled:opacity-50"
-          placeholder="https://example.com"
-          type="url"
+          className='flex-1 bg-background-dark border-border-dark rounded-lg text-xs px-3 py-2 text-white placeholder:text-[#ab9db9] disabled:opacity-50'
+          placeholder='https://example.com'
+          type='url'
         />
         <button
           onClick={handleCrawl}
           disabled={loading}
-          className="bg-primary text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-primary/90 disabled:opacity-50"
+          className='bg-primary text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-primary/90 disabled:opacity-50'
         >
           {loading ? 'Crawling…' : 'Crawl'}
         </button>
