@@ -4,6 +4,7 @@ import { loginApi } from '@/api/auth.api';
 interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
+  userName: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -15,6 +16,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string | null>(
+    localStorage.getItem('user_name')
+  );
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -24,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const login = async (email: string, password: string) => {
     try {
-      const { access_token, refresh_token, user_id } = await loginApi(
+      const { access_token, refresh_token, user_id ,user_name} = await loginApi(
         email,
         password
       );
@@ -32,14 +36,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // ✅ success only
       localStorage.setItem('access_token', access_token);
       localStorage.setItem('refresh_token', refresh_token);
-      localStorage.setItem('user_id', String(user_id)); // 🔥 REQUIRED
+      localStorage.setItem('user_id', String(user_id));
+      localStorage.setItem('user_name', user_name);
+      setUserName(user_name);
 
       setIsAuthenticated(true);
     } catch (error) {
       // ❌ failure path
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      localStorage.removeItem('user_id'); // 🔥 ADD
+      localStorage.removeItem('user_id'); 
+      localStorage.removeItem('user_name'); 
       setIsAuthenticated(false);
 
       throw error; // 🔥 CRITICAL
@@ -49,9 +56,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    localStorage.removeItem('user_id'); // 🔥 ADD
+    localStorage.removeItem('user_id'); 
+    localStorage.removeItem('user_name');
+    setUserName(null); // logout
 
-     // 🧹 chat cleanup (🔥 IMPORTANT)
+    // 🧹 chat cleanup (🔥 IMPORTANT)
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith('chat_messages_')) {
         localStorage.removeItem(key);
@@ -63,7 +72,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, loading, userName, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

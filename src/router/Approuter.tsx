@@ -9,7 +9,6 @@ import KnowledgeBase from '@/pages/knowledge-base/KnowledgeBase';
 import AddManualQA from '@/pages/knowledge-base/manual/manualqa';
 import Signup from '@/pages/Signup';
 import ChatLogs from '@/pages/ChatLogs';
-import Settings from '@/pages/Settings';
 import Home from '@/pages/Home';
 import ChatDetails from '@/pages/ChatDetails';
 
@@ -59,7 +58,7 @@ const AppRoutes: React.FC = () => {
         <Route path='/chats' element={<ChatDetails />} />
 
 
-        <Route path='/settings' element={<Settings />} />
+        {/* <Route path='/settings' element={<Settings />} /> */}
 
         {/* add more protected child routes here */}
       </Route>

@@ -11,6 +11,11 @@ const tabMap = {
   crawler: 'url',
   manual: 'qa',
 };
+const typeLabelMap: Record<KnowledgeItem['source_type'], string> = {
+  file: 'Document',
+  url: 'Crawler',
+  qa: 'Q&A',
+};
 
 const SourcesTable: React.FC<Props> = ({ activeTab, items, loading }) => {
   const filtered = items.filter(
@@ -39,16 +44,21 @@ const SourcesTable: React.FC<Props> = ({ activeTab, items, loading }) => {
             <th className='px-6 py-4 text-[10px] text-[#ab9db9] uppercase'>
               Date Added
             </th>
-            <th className='px-6 py-4 text-[10px] text-right text-[#ab9db9] uppercase'>
-              Actions
-            </th>
+            {activeTab === 'documents' && (
+              <th className='px-6 py-4 text-[10px] text-right text-[#ab9db9] uppercase'>
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
 
         <tbody className='divide-y divide-border-dark'>
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={4} className='px-6 py-6 text-xs text-[#ab9db9]'>
+              <td
+                colSpan={activeTab === 'documents' ? 4 : 3}
+                className='px-6 py-6 text-xs text-[#ab9db9]'
+              >
                 No sources found for this tab.
               </td>
             </tr>
@@ -93,22 +103,24 @@ const SourcesTable: React.FC<Props> = ({ activeTab, items, loading }) => {
               </td>
 
               <td className='px-6 py-4 text-xs text-[#ab9db9]'>
-                {item.source_type}
+                {typeLabelMap[item.source_type]}
               </td>
-
               <td className='px-6 py-4 text-xs text-[#ab9db9]'>
-                {item.uploaded_at
-                  ? new Date(item.uploaded_at).toLocaleDateString()
-                  : '—'}
+                {(() => {
+                  const date = item.uploaded_at || item.created_at;
+                  return date ? new Date(date).toLocaleDateString() : '—';
+                })()}
               </td>
 
-              <td className='px-6 py-4 text-right'>
-                <button className='p-1.5 hover:bg-red-500/10 rounded-lg text-[#ab9db9] hover:text-red-400'>
-                  <span className='material-symbols-outlined text-lg'>
-                    delete
-                  </span>
-                </button>
-              </td>
+              {activeTab === 'documents' && (
+                <td className='px-6 py-4 text-right'>
+                  <button className='p-1.5 hover:bg-red-500/10 rounded-lg text-[#ab9db9] hover:text-red-400'>
+                    <span className='material-symbols-outlined text-lg'>
+                      delete
+                    </span>
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

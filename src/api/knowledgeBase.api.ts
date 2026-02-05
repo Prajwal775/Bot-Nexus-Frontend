@@ -8,6 +8,7 @@ export interface KnowledgeItem {
   original_filename?: string;
   content_type?: string;
   uploaded_at?: string;
+  created_at: string;
 }
 
 export interface KnowledgeResponse {
@@ -17,7 +18,14 @@ export interface KnowledgeResponse {
   items: KnowledgeItem[];
 }
 
-export const fetchKnowledgeBase = async (): Promise<KnowledgeResponse> => {
-  const res = await api.get('/api/v1/knowledge-base');
+export type KnowledgeApiSourceType = 'file' | 'kb_qa' | 'kb_url';
+
+export const fetchKnowledgeBase = async (
+  sourceType: KnowledgeApiSourceType
+): Promise<KnowledgeResponse> => {
+  const res = await api.get('/api/v1/knowledge-base', {
+    params: { source_type: sourceType },
+  });
+
   return res.data;
 };

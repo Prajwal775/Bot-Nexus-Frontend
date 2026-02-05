@@ -6,10 +6,6 @@ import { DayPicker } from 'react-day-picker';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
-// interface ChatLogsProps {
-//   onSelectSession: (id: number) => void;
-// }
-
 const PAGE_LIMIT = 10;
 
 // const ChatLogs: React.FC<ChatLogsProps> = ({ onSelectSession }) => {
@@ -35,13 +31,13 @@ const ChatLogs: React.FC = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const totalPages = Math.ceil(total / PAGE_LIMIT);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const navigate = useNavigate();
 
   const TYPE_LABELS: Record<string, string> = {
     all: 'All Sessions',
     ai: 'AI Only',
-    human: 'Human Only',
     'human + ai': 'AI + Human',
   };
 
@@ -55,7 +51,7 @@ const ChatLogs: React.FC = () => {
 
   useEffect(() => {
     fetchChatLogs();
-  }, [page, typeFilter, fromDate, toDate]);
+  }, [page, typeFilter, fromDate, toDate, debouncedSearch]);
 
   useEffect(() => {
     const close = (e: MouseEvent) => {
@@ -78,7 +74,7 @@ const ChatLogs: React.FC = () => {
       skip: (page - 1) * PAGE_LIMIT,
       limit: PAGE_LIMIT,
     };
-    if (searchSessionId.trim()) params.session_id = searchSessionId.trim();
+    if (debouncedSearch) params.session_id = debouncedSearch;
     if (typeFilter !== 'all') params.type = typeFilter;
     if (fromDate && toDate) {
       params.start_date = fromDate;
@@ -104,8 +100,8 @@ const ChatLogs: React.FC = () => {
           type:
             item.type === 'ai'
               ? 'AI Only'
-              : item.type === 'human'
-              ? 'Human Only'
+              : item.type === 'human + ai'
+              ? 'AI + Human'
               : 'AI + Human',
           status:
             item.status === 'completed'
@@ -123,8 +119,9 @@ const ChatLogs: React.FC = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
+      setDebouncedSearch(searchSessionId.trim());
       setPage(1); // reset pagination on new search
-    }, 400); // 300–500ms is ideal
+    }, 400);
 
     return () => clearTimeout(handler);
   }, [searchSessionId]);
@@ -152,10 +149,10 @@ const ChatLogs: React.FC = () => {
             </p>
           </div>
           <div className='flex gap-3'>
-            <button className='flex items-center gap-2 h-10 px-4 bg-white/5 border border-border-dark hover:bg-white/10 rounded-lg text-sm font-bold'>
+            {/* <button className='flex items-center gap-2 h-10 px-4 bg-white/5 border border-border-dark hover:bg-white/10 rounded-lg text-sm font-bold'>
               <span className='material-symbols-outlined'>download</span>
               Export Logs
-            </button>
+            </button> */}
             <button
               onClick={handleRefresh}
               className='flex items-center gap-2 h-10 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-bold'
@@ -201,10 +198,16 @@ const ChatLogs: React.FC = () => {
                   expand_more
                 </span>
               </button>
-
-             
               {showCalendar && (
-                <div className='absolute right-0 mt-2 bg-card-dark border border-border-dark rounded-xl p-4 z-50'>
+                <div
+                  className='absolute right-0 mt-2 rounded-xl p-4 z-50 shadow-2xl'
+                  style={{
+                    // backgroundColor: '#1c1f2a',
+                    // border: '1px solid #2b2f3f',
+                    backgroundColor: '#262a3b', // ⬅️ lighter than before
+                    border: '1px solid #353a52',
+                  }}
+                >
                   <DayPicker
                     mode='range'
                     selected={{
@@ -213,23 +216,53 @@ const ChatLogs: React.FC = () => {
                     }}
                     onSelect={(range) => {
                       if (!range) return;
-
-                      if (range.from) {
+                      if (range.from)
                         setFromDate(format(range.from, 'yyyy-MM-dd'));
-                      }
-                      if (range.to) {
-                        setToDate(format(range.to, 'yyyy-MM-dd'));
-                      }
+                      if (range.to) setToDate(format(range.to, 'yyyy-MM-dd'));
                     }}
-                    className='text-white'
+                    className='text-sm'
                     modifiersClassNames={{
-                      selected: 'bg-primary text-white',
-                      today: 'text-primary',
+                      selected: 'bg-[#7c3aed] text-white',
+                      today: 'text-[#a78bfa] font-semibold',
+                      outside: 'text-[#6b7280]',
                     }}
                     styles={{
-                      caption: { color: '#fff' },
-                      head_cell: { color: '#ab9db9' },
-                      day: { color: '#fff' },
+                      root: { color: '#e5e7eb' },
+
+                      caption: {
+                        color: '#ffffff',
+                        fontWeight: 600,
+                      },
+
+                      head_cell: { color: '#9ca3af' },
+
+                      day: {
+                        color: '#e5e7eb',
+                        borderRadius: '6px',
+                      },
+
+                      /* IMPORTANT PART */
+                      nav: {
+                        backgroundColor: 'transparent',
+                      },
+
+                      nav_button: {
+                        color: '##f9fafb ',
+                        backgroundColor: 'transparent',
+                        boxShadow: 'none',
+
+                        opacity: 1,
+                      },
+
+                      day_selected: {
+                        backgroundColor: '#7c3aed',
+                        color: '#ffffff',
+                      },
+
+                      day_range_middle: {
+                        backgroundColor: '#312e81',
+                        color: '#e5e7eb',
+                      },
                     }}
                   />
                 </div>
@@ -241,11 +274,7 @@ const ChatLogs: React.FC = () => {
                 onClick={() => setShowType(!showType)}
                 className='flex items-center gap-2 h-11 px-4 bg-card-dark rounded-lg text-sm font-medium'
               >
-                {/* <span>
-                  Type: {typeFilter === 'all' ? 'All Sessions' : typeFilter}
-                </span> */}
                 <span>Type: {TYPE_LABELS[typeFilter]}</span>
-
                 <span className='material-symbols-outlined text-[#ab9db9]'>
                   expand_more
                 </span>
@@ -253,7 +282,7 @@ const ChatLogs: React.FC = () => {
 
               {showType && (
                 <div className='absolute right-0 mt-2 bg-card-dark border border-border-dark rounded-xl overflow-hidden z-50'>
-                  {(['all', 'ai', 'human', 'human + ai'] as const).map((t) => (
+                  {(['all', 'ai', 'human + ai'] as const).map((t) => (
                     <button
                       key={t}
                       onClick={() => {

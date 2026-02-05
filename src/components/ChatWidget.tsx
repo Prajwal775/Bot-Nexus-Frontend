@@ -41,25 +41,18 @@ const ChatWidget: React.FC = () => {
         setBotThinking(true);
         const res = await askQuestionApi(cleanInput, sessionId);
 
-        if (!res?.answer) return;
+        // if (!res?.answer) return;
 
-        // 🚨 If API triggers escalation → DO NOT show API text
-        const isEscalation =
-          res.answer.includes('notified a human') ||
-          res.answer.includes('not sure');
-
-        if (!isEscalation) {
-          // ✅ Normal bot reply
-          addBotMessage(res.answer);
+        if (res.type === 'human_alert') {
+          return;
         }
-      } catch {
-        addBotMessage('Something went wrong. Please try again.');
-      } finally {
+        // if (res.answer) {
+        //   addBotMessage(res.answer);
+        // }
+      }finally {
         setBotThinking(false);
       }
     }
-
-    // 3️⃣ HUMAN MODE → socket handled inside context
   };
 
   /* ================= HARD CLOSE ================= */
@@ -126,13 +119,12 @@ const ChatWidget: React.FC = () => {
               // BOT
               return (
                 <div key={i} className='flex gap-3'>
-                  <div
-                    className='w-8 h-8 rounded-full bg-cover shrink-0'
-                    style={{
-                      backgroundImage:
-                        'url("https://picsum.photos/id/102/100/100")',
-                    }}
-                  />
+                  <div className='w-8 h-8 rounded-full bg-[#302839] flex items-center justify-center shrink-0'>
+                    <span className='material-symbols-outlined text-white text-[18px]'>
+                      smart_toy
+                    </span>
+                  </div>
+
                   <div className='max-w-[280px] rounded-xl rounded-bl-none px-4 py-3 bg-[#302839] text-white text-sm'>
                     {msg.text}
                   </div>
@@ -140,16 +132,14 @@ const ChatWidget: React.FC = () => {
               );
             })}
 
-
             {isTyping && (
               <div className='flex gap-3'>
-                <div
-                  className='w-8 h-8 rounded-full bg-cover'
-                  style={{
-                    backgroundImage:
-                      'url("https://picsum.photos/id/102/100/100")',
-                  }}
-                />
+                <div className='w-8 h-8 rounded-full bg-[#302839] flex items-center justify-center'>
+                  <span className='material-symbols-outlined text-white text-[18px]'>
+                    smart_toy
+                  </span>
+                </div>
+
                 <div className='rounded-xl px-4 py-3 bg-[#302839] text-white text-sm flex gap-1'>
                   <span className='animate-bounce'>•</span>
                   <span className='animate-bounce [animation-delay:0.15s]'>

@@ -6,6 +6,13 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
+  const { userName } = useAuth();
+  const capitalizeName = (name: string) =>
+    name
+      .split(' ')
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -13,9 +20,8 @@ const Sidebar: React.FC = () => {
     { path: '/chat-logs', label: 'Chat Logs', icon: 'forum' },
     { path: '/chats', label: 'Chats', icon: 'chat' },
 
-    { path: '/settings', label: 'Settings', icon: 'settings' },
+    // { path: '/settings', label: 'Settings', icon: 'settings' },
   ];
-
   return (
     <aside className='w-64 border-r border-border-dark bg-sidebar-dark flex flex-col justify-between shrink-0'>
       <div className='flex flex-col gap-8 p-6'>
@@ -68,23 +74,8 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className='p-4 flex flex-col gap-4'>
-        <div className='bg-white/5 rounded-xl p-4'>
-          <p className='text-xs font-bold uppercase tracking-wider text-[#ab9db9] mb-2'>
-            Usage
-          </p>
-          <div className='w-full bg-white/10 h-1.5 rounded-full mb-2 overflow-hidden'>
-            <div className='bg-primary h-full w-[72%] rounded-full'></div>
-          </div>
-          <p className='text-[11px] text-[#ab9db9]'>7,200 / 10,000 messages</p>
-        </div>
-
-        <div className='flex items-center gap-3 p-3 rounded-xl bg-card-dark border border-border-dark'>
-          {/* <img
-            alt="Joel W"
-            className="size-9 rounded-full bg-slate-200 object-cover"
-            src="https://picsum.photos/id/64/100/100"
-          /> */}
+      <div className='px-4 pt-2 pb-6 flex flex-col gap-4'>
+        <div className='flex items-center gap-3 p-3 rounded-xl bg-card-dark border border-border-dark -mt-2'>
           <div className='size-9 rounded-full bg-[#302839] flex items-center justify-center'>
             <span className='material-symbols-outlined text-white text-[20px]'>
               person
@@ -92,7 +83,9 @@ const Sidebar: React.FC = () => {
           </div>
 
           <div className='flex-1 min-w-0'>
-            <p className='text-sm font-semibold truncate text-white'>Joel W</p>
+            <p className='text-sm font-semibold truncate text-white'>
+              {userName ? capitalizeName(userName) : 'User'}
+            </p>
             <p className='text-xs text-[#ab9db9] truncate'>Admin Plan</p>
           </div>
           <button

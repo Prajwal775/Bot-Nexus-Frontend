@@ -373,20 +373,9 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
 
             {/* Tabs */}
             <div className='flex border-b border-border-dark px-6 gap-8 bg-transparent'>
-              {['All Messages', 'AI Thought Log', 'Internal Notes'].map(
-                (tab, idx) => (
-                  <button
-                    key={tab}
-                    className={`flex flex-col items-center justify-center pb-3 pt-4 border-b-2 transition-colors ${
-                      idx === 0
-                        ? 'border-primary text-white font-bold'
-                        : 'border-transparent text-[#ab9db9] hover:text-white'
-                    }`}
-                  >
-                    <p className='text-sm tracking-[0.015em]'>{tab}</p>
-                  </button>
-                )
-              )}
+              <button className='flex flex-col items-center justify-center pb-3 pt-4 border-b-2 transition-colors border-primary text-white font-bold'>
+                <p className='text-sm tracking-[0.015em]'>All Messages</p>
+              </button>
             </div>
 
             {/* Message History */}
@@ -405,7 +394,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                         </div>
                         <div className='flex flex-col gap-1 items-start max-w-[70%]'>
                           <div className='flex items-center gap-2'>
-                            <span className='text-white text-xs font-bold'>
+                            <span className='text-white text-sm font-bold'>
                               {m.sender_name ?? 'User'}
                             </span>
                             <span className='text-[#6d5b7e] text-[10px]'>
@@ -490,7 +479,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
 
             {/* Composer */}
             <div className='p-6 border-t border-border-dark bg-transparent'>
-              <div className='relative bg-[#302839] rounded-xl border border-[#473b54] p-2 focus-within:ring-2 focus-within:ring-primary/50 transition-all'>
+<div className='relative bg-[#302839] rounded-xl border border-[#473b54] p-3 transition-all'>
                 <textarea
                   disabled={readOnly}
                   value={composerText}
@@ -498,26 +487,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                   className='w-full bg-transparent border-none focus:ring-0 text-white text-sm min-h-[80px] resize-none'
                   placeholder='Type your response as Alex...'
                 ></textarea>
-                <div className='flex justify-between items-center mt-2 px-2 pb-1'>
-                  <div className='flex gap-2'>
-                    <button className='p-1.5 text-[#ab9db9] hover:bg-white/10 rounded transition-colors'>
-                      <span className='material-symbols-outlined text-xl'>
-                        attach_file
-                      </span>
-                    </button>
-                    <button className='p-1.5 text-[#ab9db9] hover:bg-white/10 rounded transition-colors'>
-                      <span className='material-symbols-outlined text-xl'>
-                        mood
-                      </span>
-                    </button>
-                    <div className='h-6 w-px bg-[#473b54] mx-1'></div>
-                    <button className='flex items-center gap-2 px-2 py-1 text-[11px] font-bold text-primary bg-primary/10 rounded border border-primary/20'>
-                      <span className='material-symbols-outlined text-sm'>
-                        bolt
-                      </span>
-                      PRESETS
-                    </button>
-                  </div>
+                <div className='flex justify-end items-center mt-2 px-2 pb-1'>
                   <button
                     disabled={readOnly}
                     onClick={sendReply}

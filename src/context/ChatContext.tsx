@@ -69,23 +69,52 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   const { sendMessage: sendSocketMessage, requestHuman } = useUserSocket(
     chatState.sessionId,
     {
-      onHumanAlert: (message?: string) => {
-        setChatState((prev) => ({
-          ...prev,
-          mode: 'waiting_human',
-          ...(message
-            ? {
-                messages: [
-                  ...prev.messages,
-                  {
-                    sender: 'system',
-                    text: message, // 🔥 ONLY from socket
-                  },
-                ],
-              }
-            : {}),
-        }));
-      },
+      // onHumanAlert: (message?: string) => {
+      //   setChatState((prev) => ({
+      //     ...prev,
+      //     mode: 'waiting_human',
+      //     ...(message
+      //       ? {
+      //           messages: [
+      //             ...prev.messages,
+      //             {
+      //               sender: 'system',
+      //               text: message, 
+      //             },
+      //           ],
+      //         }
+      //       : {}),
+      //   }));
+      // },
+onHumanAlert: (message?: string) => {
+  setChatState((prev) => {
+    // 🔒 HARD DEDUPE: if message already exists, do NOTHING
+    if (
+      message &&
+      prev.messages.some(
+        (m) => m.text === message
+      )
+    ) {
+      return prev;
+    }
+
+    return {
+      ...prev,
+      mode: 'waiting_human',
+      ...(message
+        ? {
+            messages: [
+              ...prev.messages,
+              {
+                sender: 'system', // 🔥 ONLY system
+                text: message,
+              },
+            ],
+          }
+        : {}),
+    };
+  });
+},
 
       onAgentJoined: (message?: string) => {
         setChatState((prev) => ({
