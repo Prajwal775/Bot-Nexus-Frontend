@@ -41,15 +41,18 @@ const ChatWidget: React.FC = () => {
         setBotThinking(true);
         const res = await askQuestionApi(cleanInput, sessionId);
 
-        // if (!res?.answer) return;
+        if (!res?.answer) return;
+        const fallbackMessage =
+          "Unfortunately I don't know the answer to this question. A human agent has been notified.";
 
-        if (res.type === 'human_alert') {
-          return;
+        // 🚨 If API returns fallback message → ignore it
+        if (res.answer.trim() === fallbackMessage) {
+          return; // socket will handle showing it
         }
-        // if (res.answer) {
-        //   addBotMessage(res.answer);
-        // }
-      }finally {
+
+        // ✅ Otherwise show real answer
+        addBotMessage(res.answer);
+      } finally {
         setBotThinking(false);
       }
     }
