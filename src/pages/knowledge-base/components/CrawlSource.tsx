@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import api from '@/api/axios';
 import { showGlobalToast } from '@/components/ui/ToastProvider';
 
-const CrawlSource: React.FC = () => {
+interface CrawlSourceProps {
+  onSuccess?: () => void;
+}
+
+const CrawlSource: React.FC<CrawlSourceProps> = ({ onSuccess }) => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,6 +29,7 @@ const CrawlSource: React.FC = () => {
         'success'
       );
       setUrl(''); // optional: clear input after success
+      onSuccess?.();
     } catch (err) {
       console.error(err);
       // ⏱️ Axios timeout / aborted request
@@ -34,6 +39,7 @@ const CrawlSource: React.FC = () => {
           'info'
         );
         setUrl('');
+        onSuccess?.();
         return;
       }
 

@@ -2,7 +2,11 @@ import React, { useRef, useState } from 'react';
 import api from '@/api/axios';
 import { showGlobalToast } from '@/components/ui/ToastProvider';
 
-const UploadSource: React.FC = () => {
+interface UploadSourceProps {
+  onSuccess?: () => void;
+}
+
+const UploadSource: React.FC<UploadSourceProps> = ({ onSuccess }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [open, setOpen] = useState(false);
@@ -37,6 +41,7 @@ const UploadSource: React.FC = () => {
       showGlobalToast('File uploaded. Indexing in background.', 'success');
       clearFile();
       setOpen(false);
+      onSuccess?.();
     } catch (err) {
       // ⏱️ Axios timeout / aborted
       if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
@@ -47,6 +52,7 @@ const UploadSource: React.FC = () => {
 
         clearFile();
         setOpen(false);
+        onSuccess?.();
         return;
       }
 

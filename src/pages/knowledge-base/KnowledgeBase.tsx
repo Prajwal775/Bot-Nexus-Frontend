@@ -21,6 +21,11 @@ const KnowledgeBase: React.FC = () => {
   const [items, setItems] = useState<KnowledgeItem[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+  const triggerRefresh = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   useEffect(() => {
     const sourceType = apiSourceTypeMap[activeTab];
 
@@ -29,7 +34,7 @@ const KnowledgeBase: React.FC = () => {
     fetchKnowledgeBase(sourceType)
       .then((res) => setItems(res.items))
       .finally(() => setLoading(false));
-  }, [activeTab]);
+  }, [activeTab, refreshKey]);
 
   return (
     <div className='flex flex-col'>
@@ -46,19 +51,15 @@ const KnowledgeBase: React.FC = () => {
 
         {/* Quick Actions */}
         <section className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
-          <UploadSource />
-          <CrawlSource />
+          <UploadSource onSuccess={triggerRefresh} />
+          <CrawlSource onSuccess={triggerRefresh} />
           <ManualSource />
         </section>
 
         {/* Tabs + Table */}
         <section>
           <SourceTabs activeTab={activeTab} onChange={setActiveTab} />
-          <SourcesTable
-            activeTab={activeTab}
-            items={items}
-            loading={loading}
-          />
+          <SourcesTable activeTab={activeTab} items={items} loading={loading} />
         </section>
 
         <KnowledgeFooter />
