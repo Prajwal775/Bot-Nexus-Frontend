@@ -59,7 +59,7 @@ const Signup: React.FC = () => {
             </svg>
           </div>
           <h2 className='text-white text-2xl font-bold tracking-tight'>
-            BotNexus
+            IDLAH
           </h2>
         </div>
       </header>

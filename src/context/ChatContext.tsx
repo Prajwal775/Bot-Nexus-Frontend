@@ -51,7 +51,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     messages: [
       {
         sender: 'bot',
-        text: "Hi there! I'm your Nexus assistant. How can I help you build your identity today?",
+        text: "Hi there! I'm your IDLAH assistant. How can I help you build your identity today?",
       },
     ],
   });
@@ -202,7 +202,7 @@ onHumanAlert: (message?: string) => {
       messages: [
         {
           sender: 'bot',
-          text: "Hi there! I'm your Nexus assistant. How can I help you build your identity today?",
+          text: "Hi there! I'm your IDLAH assistant. How can I help you build your identity today?",
         },
       ],
     });

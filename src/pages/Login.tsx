@@ -58,7 +58,7 @@ const Login: React.FC = () => {
             </svg>
           </div>
           <h2 className='text-white text-2xl font-bold leading-tight tracking-tight'>
-            BotNexus
+            IDLAH
           </h2>
         </div>
       </header>
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                 </label>
                 <input
                   className='w-full rounded-lg text-white border border-border-dark bg-[#211c27] focus:ring-2 focus:ring-primary focus:border-primary h-12 px-4 placeholder-[#ab9db9] text-base'
-                  placeholder='admin@botnexus.io'
+                  placeholder='admin@Idlah.io'
                   type='email'
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
