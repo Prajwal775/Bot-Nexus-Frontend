@@ -76,7 +76,7 @@ const ChatWidget: React.FC = () => {
         <div className='w-[400px] h-[600px] bg-[#1f1629] rounded-xl flex flex-col overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/10 animate-in slide-in-from-bottom-5 duration-300'>
           {/* HEADER */}
           <header className='bg-gradient-to-br from-primary to-purple-600 p-6 flex justify-between items-center text-white'>
-            <h2 className='font-bold text-lg'>BotNexus Support</h2>
+            <h2 className='font-bold text-lg'>Idlah Support</h2>
             <button onClick={handleMinimize} title='Minimize'>
               <span className='material-symbols-outlined'>minimize</span>
             </button>
@@ -185,7 +185,7 @@ const ChatWidget: React.FC = () => {
             </div>
 
             <p className='text-center text-[10px] text-[#ab9db9] mt-3'>
-              Powered by BotNexus AI
+              Powered by IDLAH AI
             </p>
           </div>
         </div>

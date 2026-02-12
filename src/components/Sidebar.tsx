@@ -34,7 +34,7 @@ const Sidebar: React.FC = () => {
           </div>
           <div className='flex flex-col'>
             <h1 className='text-white text-base font-bold leading-none'>
-              BotNexus
+              IDLAH
             </h1>
             <p className='text-[#ab9db9] text-[10px] uppercase tracking-widest font-semibold'>
               Enterprise AI
