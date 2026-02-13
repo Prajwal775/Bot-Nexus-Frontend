@@ -1,7 +1,7 @@
 import axios from '@/api/axios';
 import React, { useEffect, useState } from 'react';
 import { useAdminSocket } from '@/context/AdminSocketContext';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface ChatDetailsProps {
   // sessionId?: number;
@@ -31,6 +31,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
   const [composerText, setComposerText] = useState('');
   const { sessionId } = useParams<{ sessionId: string }>();
   const parsedSessionId = sessionId;
+  const navigate = useNavigate();
 
   const {
     send: adminSend,
@@ -358,6 +359,19 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                 </div>
               </div>
               <div className='flex gap-2'>
+                {/* ✅ BACK BUTTON (only in readOnly mode) */}
+                {readOnly && (
+                  <button
+                    onClick={() => navigate('/chat-logs')}
+                    className='flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20'
+                  >
+                    <span className='material-symbols-outlined mr-2 text-lg'>
+                      arrow_back
+                    </span>
+                    Back
+                  </button>
+                )}
+
                 <button
                   onClick={readOnly ? undefined : closeSession}
                   disabled={readOnly}
@@ -479,7 +493,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
 
             {/* Composer */}
             <div className='p-6 border-t border-border-dark bg-transparent'>
-<div className='relative bg-[#302839] rounded-xl border border-[#473b54] p-3 transition-all'>
+              <div className='relative bg-[#302839] rounded-xl border border-[#473b54] p-3 transition-all'>
                 <textarea
                   disabled={readOnly}
                   value={composerText}
