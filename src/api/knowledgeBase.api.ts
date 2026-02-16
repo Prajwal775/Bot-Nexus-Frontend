@@ -24,7 +24,11 @@ export const fetchKnowledgeBase = async (
   sourceType: KnowledgeApiSourceType
 ): Promise<KnowledgeResponse> => {
   const res = await api.get('/api/v1/knowledge-base', {
-    params: { source_type: sourceType },
+    params: {
+      source_type: sourceType,
+      page: 1,
+      page_size: 100, //
+    },
   });
 
   return res.data;
