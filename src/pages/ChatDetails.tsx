@@ -375,7 +375,15 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                 <button
                   onClick={readOnly ? undefined : closeSession}
                   disabled={readOnly}
-                  className='flex items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20'
+                  className={`
+    flex items-center justify-center rounded-lg h-10 px-4
+    text-sm font-bold transition-colors
+    ${
+      readOnly
+        ? 'bg-[#302839] text-[#6d5b7e] cursor-not-allowed opacity-60'
+        : 'bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20'
+    }
+  `}
                 >
                   <span className='material-symbols-outlined mr-2 text-lg'>
                     check_circle
@@ -505,8 +513,19 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                   <button
                     disabled={readOnly}
                     onClick={sendReply}
-                    className='bg-primary text-white rounded-lg px-6 py-2 text-sm font-bold shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all'
-                  >
+                    //   className='bg-primary text-white rounded-lg px-6 py-2 text-sm font-bold shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all'
+                    // >
+                     className={`
+    bg-primary text-white rounded-lg px-6 py-2 text-sm font-bold
+    shadow-lg shadow-primary/30
+    transition-all
+    ${
+      readOnly
+        ? 'opacity-60 cursor-not-allowed'
+        : 'hover:scale-[1.02] active:scale-95'
+    }
+  `}
+>
                     Send Reply
                   </button>
                 </div>

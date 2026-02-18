@@ -43,7 +43,7 @@ const ChatWidget: React.FC = () => {
 
         if (!res?.answer) return;
         const fallbackMessage =
-          "Unfortunately I don't know the answer to this question. A human agent has been notified.";
+        "I was unable to answer multiple times. A human agent has now been notified.";
 
         // 🚨 If API returns fallback message → ignore it
         if (res.answer.trim() === fallbackMessage) {
