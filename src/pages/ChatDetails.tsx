@@ -2,6 +2,8 @@ import axios from '@/api/axios';
 import React, { useEffect, useState } from 'react';
 import { useAdminSocket } from '@/context/AdminSocketContext';
 import { useParams, useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface ChatDetailsProps {
   // sessionId?: number;
@@ -277,7 +279,44 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
 
   /* ================= UI ================= */
 
-  const showHumanHandover = messages.some((m) => m.needs_human);
+  // const showHumanHandover = messages.some((m) => m.needs_human);
+
+  const failureIndices = messages
+    .map((m, i) => (m.role === 'bot' && m.needs_human ? i : -1))
+    .filter((i) => i !== -1);
+
+  // 5th failure (index 4)
+  const escalationIndex = failureIndices.length >= 5 ? failureIndices[4] : -1;
+
+  const markdownComponents = {
+    p: ({ ...props }) => <p className='mb-2 last:mb-0' {...props} />,
+    ul: ({ ...props }) => (
+      <ul className='list-disc pl-5 mb-2 space-y-1' {...props} />
+    ),
+    ol: ({ ...props }) => (
+      <ol className='list-decimal pl-5 mb-2 space-y-1' {...props} />
+    ),
+    li: ({ ...props }) => <li className='text-sm' {...props} />,
+    strong: ({ ...props }) => (
+      <strong className='font-semibold text-white' {...props} />
+    ),
+    h1: ({ ...props }) => (
+      <h1 className='text-base font-bold mb-2' {...props} />
+    ),
+    h2: ({ ...props }) => (
+      <h2 className='text-sm font-semibold mb-2' {...props} />
+    ),
+    code: ({ inline, children, ...props }: any) =>
+      inline ? (
+        <code className='bg-[#1a1a1e] px-1 py-0.5 rounded text-xs'>
+          {children}
+        </code>
+      ) : (
+        <pre className='bg-[#1a1a1e] p-3 rounded-lg overflow-x-auto text-xs mb-2'>
+          <code {...props}>{children}</code>
+        </pre>
+      ),
+  };
 
   return (
     <div className='flex-1 flex bg-[#191022] overflow-hidden'>
@@ -425,9 +464,17 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                                 : ''}
                             </span>
                           </div>
-                          <p className='text-sm font-normal leading-relaxed rounded-2xl rounded-tl-none px-4 py-3 bg-[#302839] text-white'>
+                          {/* <p className='text-sm font-normal leading-relaxed rounded-2xl rounded-tl-none px-4 py-3 bg-[#302839] text-white'>
                             {m.content}
-                          </p>
+                          </p> */}
+                          <div className='text-sm font-normal leading-relaxed rounded-2xl rounded-tr-none px-4 py-3 bg-[#251e2e] border border-border-dark text-white'>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={markdownComponents}
+                            >
+                              {m.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </div>
                     ) : m.role === 'bot' ? (
@@ -451,9 +498,17 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                               </span>
                             </span>
                           </div>
-                          <p className='text-sm font-normal leading-relaxed rounded-2xl rounded-tr-none px-4 py-3 bg-[#251e2e] border border-border-dark text-white'>
+                          {/* <p className='text-sm font-normal leading-relaxed rounded-2xl rounded-tr-none px-4 py-3 bg-[#251e2e] border border-border-dark text-white'>
                             {m.content}
-                          </p>
+                          </p> */}
+                          <div className='text-sm font-normal leading-relaxed rounded-2xl rounded-tr-none px-4 py-3 bg-[#251e2e] border border-border-dark text-white'>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={markdownComponents}
+                            >
+                              {m.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -482,7 +537,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                     )}
 
                     {/* inline human handover chip */}
-                    {m.needs_human && (
+                    {escalationIndex === i && (
                       <div className='flex items-center justify-center py-4'>
                         <div className='flex items-center gap-3 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400'>
                           <span className='material-symbols-outlined text-sm'>
@@ -515,7 +570,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
                     onClick={sendReply}
                     //   className='bg-primary text-white rounded-lg px-6 py-2 text-sm font-bold shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all'
                     // >
-                     className={`
+                    className={`
     bg-primary text-white rounded-lg px-6 py-2 text-sm font-bold
     shadow-lg shadow-primary/30
     transition-all
@@ -525,7 +580,7 @@ const ChatDetails: React.FC<ChatDetailsProps> = ({ readOnly = false }) => {
         : 'hover:scale-[1.02] active:scale-95'
     }
   `}
->
+                  >
                     Send Reply
                   </button>
                 </div>
